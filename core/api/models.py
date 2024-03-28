@@ -4,7 +4,7 @@ from django.utils import timezone
 
 
 class Subject(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
 
     def __str__(self):
         return self.name
@@ -15,7 +15,7 @@ class Subject(models.Model):
 
 
 class Topic(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
 
     def __str__(self):
         return self.name
@@ -26,7 +26,7 @@ class Topic(models.Model):
 
 
 class Test(models.Model):
-    title = models.CharField(max_length=200)
+    title = models.CharField(max_length=200, unique=True)
     description = models.TextField()
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
     topics = models.ManyToManyField(Topic)

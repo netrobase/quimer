@@ -1,8 +1,14 @@
-# Quimer: Computer Based Test System API
+# Quimer: Computer Based Test System Rest API Documentation
 
 The Quimer API is a RESTful API that provides endpoints for managing various aspects of a computer-based test system, including authentication, subjects, topics, tests, questions, answers, sessions, and user responses.
 
 ## Authentication
+
+### Credentials:
+- `username`: The username of the user.
+- `password`: The password of the user.
+
+> Test Credentials: `username: admin`, `password: admin_quimer`.
 
 ### Endpoint: `/api/auth/`
 

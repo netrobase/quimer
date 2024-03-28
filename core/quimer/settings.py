@@ -10,23 +10,15 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import os
 from pathlib import Path
+from datetime import timedelta
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-l)28fxwdz6=-xm6eummg^$9i6gt(0^n5j))-$6rq-0r#&hkmj*"
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -37,9 +29,68 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "api.apps.ApiConfig",
+    "rest_framework",
+    "rest_framework.authtoken",
+    "rest_framework_simplejwt",
+    "dj_rest_auth",
+    "corsheaders",
+    "graphene_django",
+    "graphql_jwt.refresh_token.apps.RefreshTokenConfig",
 ]
 
+GRAPHQL_JWT = {
+    "JWT_AUTH_HEADER_PREFIX": "Bearer",
+    "JWT_VERIFY_EXPIRATION": True,
+    "JWT_LONG_RUNNING_REFRESH_TOKEN": True,
+    "JWT_EXPIRATION_DELTA": timedelta(minutes=30),
+    "JWT_REFRESH_EXPIRATION_DELTA": timedelta(days=7),
+    "JWT_SECRET_KEY": "487272516b0d590fc9b24ceb67369c9096d16330086a869f2234a6acfa41fc16",
+    "JWT_ALGORITHM": "HS256",
+}
+
+GRAPHENE = {
+    "SCHEMA": "api.schema.schema",
+    "MIDDLEWARE": [
+        "graphql_jwt.middleware.JSONWebTokenMiddleware",
+    ],
+}
+
+AUTHENTICATION_BACKENDS = [
+    "graphql_jwt.backends.JSONWebTokenBackend",
+    "django.contrib.auth.backends.ModelBackend",
+]
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    "ROTATE_REFRESH_TOKENS": False,
+    "BLACKLIST_AFTER_ROTATION": False,
+    "UPDATE_LAST_LOGIN": True,
+    "SIGNING_KEY": "2535801f203401fec2ce04cde674fad4a2993c7cebd7c16e6d09cf253f811bca",
+    "ALGORITHM": "HS512",
+}
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        # "rest_framework.permissions.IsAuthenticated",
+        "rest_framework.permissions.AllowAny",
+    ],
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 10,
+}
+
+REST_AUTH = {
+    "USE_JWT": True,
+    "JWT_AUTH_HTTPONLY": False,
+}
+
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -74,12 +125,21 @@ WSGI_APPLICATION = "quimer.wsgi.application"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
+    # "default": {
+    #     "ENGINE": "django.db.backends.postgresql",
+    #     "NAME": os.getenv("POSTGRES_DATABASE"),
+    #     "USER": os.getenv("POSTGRES_USER"),
+    #     "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
+    #     "HOST": os.getenv("POSTGRES_HOST"),
+    #     "PORT": int(os.getenv("POSTGRES_DB_PORT", default=5432)),
+    #     "OPTIONS": {"sslmode": "require"},
+    #     "DISABLE_SERVER_SIDE_CURSORS": True,
+    # },
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
-    }
+    },
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -111,13 +171,52 @@ USE_I18N = True
 
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.2/howto/static-files/
-
-STATIC_URL = "static/"
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# ------ PRODUCTION SECURITY SET-UPS --------
+
+# Set Django Secret Key
+SECRET_KEY = os.getenv(
+    key="SECRET_KEY",
+    default="ff73819da14d1eed80cde8766113ecc63702e9aa30a019c65ed128290cc5b47f",
+)
+
+# Set Allowed Hosts
+ALLOWED_HOSTS = [
+    "127.0.0.1",
+    "localhost",
+    ".vercel.app",
+    os.getenv("ALLOWED_HOST", default=".netrobase.dev"),
+]
+
+# Dev Debug Turn Off by default
+DEBUG = os.getenv("DEBUG_MODE", default=True)
+
+# Static File Setup
+STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "static_files_build" / "static"
+
+if DEBUG:
+    # Set CORS to allow all origins
+    CORS_ALLOW_ALL_ORIGINS = True
+else:
+    # Set CORS Allowed Hosts
+    CORS_ALLOWED_ORIGINS = [
+        os.getenv(
+            key="CORS_ALLOWED_ORIGIN",
+            default="https://marketplace.netrobase.dev",
+        )
+    ]
+
+    # Enable security settings by default
+    SECURE_HSTS_SECONDS = int(os.getenv("SECURE_HSTS_SECONDS", default=31536000))
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = os.getenv(
+        "SECURE_HSTS_INCLUDE_SUBDOMAINS", default=True
+    )
+    SECURE_HSTS_PRELOAD = os.getenv("SECURE_HSTS_PRELOAD", default=True)
+    SECURE_SSL_REDIRECT = os.getenv("SECURE_SSL_REDIRECT", default=True)
+    CSRF_COOKIE_SECURE = os.getenv("CSRF_COOKIE_SECURE", default=True)
+    SESSION_COOKIE_SECURE = os.getenv("SESSION_COOKIE_SECURE", default=True)

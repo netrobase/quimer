@@ -125,20 +125,20 @@ WSGI_APPLICATION = "quimer.wsgi.application"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    # "default": {
-    #     "ENGINE": "django.db.backends.postgresql",
-    #     "NAME": os.getenv("POSTGRES_DATABASE"),
-    #     "USER": os.getenv("POSTGRES_USER"),
-    #     "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
-    #     "HOST": os.getenv("POSTGRES_HOST"),
-    #     "PORT": int(os.getenv("POSTGRES_DB_PORT", default=5432)),
-    #     "OPTIONS": {"sslmode": "require"},
-    #     "DISABLE_SERVER_SIDE_CURSORS": True,
-    # },
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("POSTGRES_DATABASE"),
+        "USER": os.getenv("POSTGRES_USER"),
+        "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
+        "HOST": os.getenv("POSTGRES_HOST"),
+        "PORT": int(os.getenv("POSTGRES_DB_PORT", default=5432)),
+        "OPTIONS": {"sslmode": "require"},
+        "DISABLE_SERVER_SIDE_CURSORS": True,
     },
+    # "default": {
+    #     "ENGINE": "django.db.backends.sqlite3",
+    #     "NAME": BASE_DIR / "db.sqlite3",
+    # },
 }
 
 # Password validation
@@ -189,11 +189,11 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     "localhost",
     ".vercel.app",
-    os.getenv("ALLOWED_HOST", default=".netrobase.dev"),
+    os.getenv("ALLOWED_HOST", default=".vercel.app"),
 ]
 
 # Dev Debug Turn Off by default
-DEBUG = os.getenv("DEBUG_MODE", default=True)
+DEBUG = os.getenv("DEBUG_MODE", default=False)
 
 # Static File Setup
 STATIC_URL = "/static/"
@@ -207,7 +207,7 @@ else:
     CORS_ALLOWED_ORIGINS = [
         os.getenv(
             key="CORS_ALLOWED_ORIGIN",
-            default="https://marketplace.netrobase.dev",
+            default="https://quimer.vercel.app",
         )
     ]
 

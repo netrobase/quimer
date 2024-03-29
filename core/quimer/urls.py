@@ -15,8 +15,16 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from .views import IndexView
+from graphene_django.views import GraphQLView
+from api.graphql.schema import schema
+from django.views.decorators.csrf import csrf_exempt
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("api/", include("api.urls"), name="api"),
+    path("", IndexView.as_view(), name="index"),
+    # implement the crsf_exempt decorator to avoid csrf token validation
+    path("graphql/", csrf_exempt(GraphQLView.as_view(graphiql=True, schema=schema))),
 ]

@@ -4,13 +4,17 @@ The Quimer API is a RESTful API that provides endpoints for managing various asp
 
 ## Authentication
 
+The Quimer API uses JSON Web Tokens (JWT) for authentication. The access token is valid for 1 hour, and the refresh token is valid for 7 days. The access token must be included in the `Authorization` header of all requests that require authentication. The access token is prefixed with `Bearer`.
+
 ### Credentials:
 - `username`: The username of the user.
 - `password`: The password of the user.
 
 > Test Credentials: `username: admin`, `password: admin_quimer`.
 
-### Endpoint: `/api/auth/`
+> For User Registration and some user related operations that doesn't have a specific endpoint, use the `/api/users/` endpoint.
+
+### Endpoints: `api/auth/login`
 
 #### Methods:
 - `POST`: Authenticate user credentials and obtain an access token.
@@ -39,6 +43,21 @@ The Quimer API is a RESTful API that provides endpoints for managing various asp
 
 #### Methods:
 - `POST`: Refresh an expired access token.
+
+## Users
+
+### Endpoint: `/api/users/`
+
+#### Methods:
+- `GET`: Retrieve all users.
+- `POST`: Create a new user.
+
+### Endpoint: `/api/users/{id}/`
+
+#### Methods:
+- `GET`: Retrieve a specific user.
+- `PUT`: Update a specific user.
+- `DELETE`: Delete a specific user.
 
 ## Subjects
 

@@ -24,6 +24,8 @@ from api.serializers import (
 from django.contrib.auth.models import User
 from dj_rest_auth.views import LoginView
 from rest_framework import status
+from django.contrib.auth.hashers import make_password
+from rest_framework.response import Response
 
 
 class APILoginView(LoginView):
@@ -66,6 +68,26 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all().order_by("-date_joined")
     serializer_class = UserSerializer
     pagination_class = CustomPagination
+
+    def create(self, request, *args, **kwargs):
+        """Customize the user creation process to hash the password before saving."""
+        # Retrieve user data from request
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user_data = serializer.validated_data
+
+        # Hash the password before saving
+        password = user_data.get("password")
+        hashed_password = make_password(password)
+        user_data["password"] = hashed_password
+
+        # Create the user
+        user = User.objects.create_user(**user_data)
+
+        # Serialize the created user for response
+        serialized_user = self.get_serializer(user)
+
+        return Response(serialized_user.data, status=status.HTTP_201_CREATED)
 
 
 class IssuerViewSet(viewsets.ModelViewSet):

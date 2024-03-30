@@ -76,13 +76,13 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         user_data = serializer.validated_data
 
-        # Hash the password before saving
+        # Extract and hash the password before saving
         password = user_data.get("password")
-        hashed_password = make_password(password)
-        user_data["password"] = hashed_password
+        user = User(**user_data)
+        user.set_password(password)
 
-        # Create the user
-        user = User.objects.create_user(**user_data)
+        # Save the user
+        user.save()
 
         # Serialize the created user for response
         serialized_user = self.get_serializer(user)

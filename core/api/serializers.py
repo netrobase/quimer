@@ -1,7 +1,6 @@
-# serializers.py
-
 from rest_framework import serializers
-from .models import (
+from django.contrib.auth.models import User
+from api.models import (
     Issuer,
     Subject,
     Topic,
@@ -11,6 +10,34 @@ from .models import (
     Session,
     UserResponse,
 )
+
+
+class UserReadSerializer(serializers.ModelSerializer):
+    """A serializer for the User model. Used for read-only operations."""
+
+    last_login = serializers.DateTimeField(format="%A, %B %d, %Y %I:%M %p")
+    date_joined = serializers.DateTimeField(format="%A, %B %d, %Y %I:%M %p")
+
+    class Meta:
+        model = User
+        fields = [
+            "id",
+            "username",
+            "email",
+            "first_name",
+            "last_name",
+            "last_login",
+            "date_joined",
+            "is_active",
+        ]
+
+
+class UserSerializer(serializers.ModelSerializer):
+    """A serializer for the User model."""
+
+    class Meta:
+        model = User
+        fields = "__all__"
 
 
 class IssuerSerializer(serializers.ModelSerializer):

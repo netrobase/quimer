@@ -84,7 +84,7 @@ export default function SignUp() {
     if (session && status === "authenticated") {
       router.push(callbackUrlString);
     }
-  }, [session, status, router]);
+  }, [session, status, router, callbackUrlString]);
 
   // Loading state
   if (status === "loading") {

@@ -32,7 +32,7 @@ export default function SignOut() {
       <div className="min-h-screen flex justify-center items-center text-white">
         <div className="bg-neutral-600 p-8 rounded shadow-md w-full max-w-md">
           <h1 className="text-3xl text-center font-bold mb-3">Sign Out</h1>
-          <p className='text-center mb-3'>Hey buddy 😎, are you sure you want to sign out of <span className='animate-pulse text-amber-500 text-lg'>Quimer 🙁</span> , can't wait to have you back!</p>
+          <p className='text-center mb-3'>Hey buddy 😎, are you sure you want to sign out of <span className='animate-pulse text-amber-500 text-lg'>Quimer 🙁</span> , can&apos;t wait to have you back!</p>
           <div className="flex justify-center space-x-4">
             <button
               onClick={() => signOut({ redirect: false })} // Call the signout function

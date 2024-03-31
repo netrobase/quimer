@@ -1,18 +1,14 @@
 'use client'
 
-import { useRouter } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useEffect, useState, ChangeEvent, FormEvent } from 'react';
 import { signIn, useSession } from 'next-auth/react';
-import axios from 'axios';
 import DefaultLoader, { SubmissionLoader } from '@/components/skeleton_loader';
 import Link from 'next/link';
 
 interface FormData {
   username: string;
   password: string;
-  email: string;
-  first_name: string;
-  last_name: string;
 }
 
 export default function SignUp() {
@@ -22,15 +18,21 @@ export default function SignUp() {
   // Use Router
   const router = useRouter();
 
+  // Get a copy of the search parameters
+  const searchParams = useSearchParams()
+
+  // Get the Query/Search Parameters
+  const callbackUrlParam = searchParams.get('callbackUrl');
+
+  // Ensure parameters are parsed to numbers correctly
+  const callbackUrlString = callbackUrlParam ? callbackUrlParam : '/dashboard';
+
   // Loading state for submission
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [formData, setFormData] = useState<FormData>({
     username: '',
     password: '',
-    email: '',
-    first_name: '',
-    last_name: '',
   });
 
   const [errorMessage, setErrorMessage] = useState<string>('');
@@ -44,19 +46,15 @@ export default function SignUp() {
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+    e.preventDefault(); // Prevent the default form submission behavior
 
     try {
       setIsSubmitting(true); // Set loading state to true when submission starts
 
-      // Make a POST request to create a new user
-      // Set API Endpoint
-      const userCreationEndpoint = `${process.env.NEXT_PUBLIC_BACKEND_URL}api/users/`;
-      await axios.post(userCreationEndpoint, formData);
+      // Get Form Data
       const { username, password } = formData;
 
-      // If user creation is successful, sign in the user
-      // then redirect to dashboard
+      // Attempt Signin
       const signInResponse = await signIn('credentials', {
         username,
         password,
@@ -68,32 +66,25 @@ export default function SignUp() {
       // then the flow wouldn't get here,
       // the SignIn redirect would take effect using the callbackUrl
       if (signInResponse && signInResponse.error) {
-        setErrorMessage('Sign in error occured, please try again later');
+        setErrorMessage('Invalid username or password. Please try again.');
         console.error('Sign in failed:', signInResponse.error);
       }
 
     } catch (error: any) {
-      // Handle error if user creation fails
-      if (error.response && error.response.data) {
-        // If the API returns an error array, concatenate the error messages into a single string
-        const errorMessage = Object.values(error.response.data).join(' ');
-        setErrorMessage(errorMessage);
-      } else {
-        // If no specific error message is returned, set a generic error message
-        setErrorMessage('Sign up failed. Please try again.');
-      }
-      console.error('User creation failed:', error);
+      /// Handle error if sign-in fails
+      setErrorMessage('Invalid username or password. Please try again.');
+      console.error('Sign in failed:', error);
     } finally {
       setIsSubmitting(false); // Set loading state to false when submission finishes (success or failure)
     }
   };
 
-  // useEffect to redirect to dashboard if session exists and is authenticated
+  // useEffect to redirect to the `callbackUrlString` or dashboard if session exists and is authenticated
   useEffect(() => {
     if (session && status === "authenticated") {
-      router.push('/dashboard');
+      router.push(callbackUrlString);
     }
-  }, [session, status, router]);
+  }, [session, status, router, callbackUrlString]);
 
   // Loading state
   if (status === "loading") {
@@ -109,14 +100,15 @@ export default function SignUp() {
       <div className="min-h-screen flex justify-center items-center">
         <div className="bg-neutral-600 p-8 rounded shadow-md w-full max-w-md">
           <Link href="/" className='left-0 text-white text-lg hover:text-amber-500'>Back 🏠</Link>
-          <h1 className="text-3xl text-center font-bold mb-3 text-neutral-100">Sign Up</h1>
-          <p className='text-center text-sm mb-3'>Hey 👋, your buddy <span className='animate-pulse text-amber-500 text-lg'>Quimer 🤗</span> awaits you!</p>
+          <h1 className="text-3xl text-center font-bold mb-3 text-neutral-100">Sign In</h1>
+          <p className='text-center text-sm'>Hey 👋 Buddy, its <span className='animate-pulse text-amber-500 text-lg'>Quimer 🤗</span></p>
+          <p className='text-center mb-3 text-sm'>Ready to jump back in? 💪</p>
           <form onSubmit={handleSubmit} className="space-y-4">
-            {['username', 'password', 'email', 'first_name', 'last_name'].map((field) => (
+            {['username', 'password'].map((field) => (
               <div key={field}>
                 <label htmlFor={field} className="block text-sm font-medium text-neutral-100 capitalize">{field}</label>
                 <input
-                  type={field === 'password' ? 'password' : field === 'email' ? 'email' : 'text'}
+                  type={field === 'password' ? 'password' : 'text'}
                   id={field}
                   name={field}
                   value={formData[field as keyof FormData]} // Use keyof FormData to ensure type safety
@@ -127,14 +119,14 @@ export default function SignUp() {
               </div>
             ))}
             {errorMessage && <div className="text-red-500 text-sm">{errorMessage}</div>}
-            <button type="submit" className="w-full bg-amber-600 text-white py-2 px-4 rounded hover:bg-amber-500 focus:outline-none focus:ring focus:ring-amber-500 focus:ring-opacity-50">Sign Up</button>
+            <button type="submit" className="w-full bg-amber-600 text-white py-2 px-4 rounded hover:bg-amber-500 focus:outline-none focus:ring focus:ring-amber-500 focus:ring-opacity-50">Sign In</button>
           </form>
-          <p className="text-neutral-100 text-center mt-4">Already have an account?</p>
+          <p className="text-neutral-100 text-center mt-4">Don&apos;t have an account yet?</p>
           <button
-            onClick={() => signIn(undefined, { callbackUrl: '/dashboard' })}
+            onClick={() => { window.location.href = "/auth/signup"; }}
             className="bg-neutral-400 rounded-lg w-full py-2 px-4 mt-2 hover:bg-amber-500 font-bold focus:outline-none focus:ring focus:ring-amber-500 focus:ring-opacity-50"
           >
-            Sign In
+            Sign Up
           </button>
         </div>
         {/* Show loader when submitting data */}

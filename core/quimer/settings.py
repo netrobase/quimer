@@ -189,6 +189,7 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     "localhost",
     ".vercel.app",
+    ".netrobase.dev",
     os.getenv("ALLOWED_HOST", default=".vercel.app"),
 ]
 
@@ -205,6 +206,7 @@ if DEBUG:
 else:
     # Set CORS Allowed Hosts
     CORS_ALLOWED_ORIGINS = [
+        "https://quimer.netrobase.dev",
         os.getenv(
             key="CORS_ALLOWED_ORIGIN",
             default="https://quimer.vercel.app",

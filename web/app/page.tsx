@@ -102,12 +102,12 @@ export default function Home() {
           <p className='text-center font-bold'>Dev Team</p>
           <div className='bg-neutral-500 rounded-lg m-4 p-4 font-bold'>
             <p className='text-center'>
-              Built as Final Portfolio Project for
-              <Link href='https://holbertonschool.com' target='_blank' rel='noopener noreferrer' className='text-black hover:text-amber-500'> Holberton School</Link>
+              Built as Final Defense Project for
+              <Link href='https://holbertonschool.com' target='_blank' rel='noopener noreferrer' className='text-black hover:text-amber-500'> Chukwuemeka Odumegwu Ojukwu University</Link>
             </p>
             <div className='grid grid-cols-1 md:grid-cols-3 gap-4 mt-2 text-center'>
               <div className='bg-neutral-600 p-2 rounded-lg hover:animate-pulse'>
-                <p className='text-amber-500'>Rahmat Folorunsho</p>
+                <p className='text-amber-500'>Nzekwe Melvin</p>
                 <p>UI/UX/Graphics, Frontend</p>
                 <div className='flex- flex-col items-center justify-center space-x-2'>
                   <Link href='https://github.com/rahma-cloud' target='_blank' rel='noopener noreferrer' className='hover:text-amber-500'>Github</Link>
@@ -144,7 +144,7 @@ export default function Home() {
           <Link href='https://www.loom.com/share/0d5001529c904d848af3174f780683c3' target='_blank' rel='noopener noreferrer' className='hover:bg-amber-600 bg-neutral-600 p-1 rounded-lg'>Demo Video</Link>
           <Link href={process.env.NEXT_PUBLIC_BACKEND_URL || ''} target='_blank' rel='noopener noreferrer' className='hover:bg-amber-500 bg-neutral-600 p-1 rounded-lg'>API Core</Link>
           <Link href='https://docs.netrobase.dev/quimer-docs' target='_blank' rel='noopener noreferrer' className='hover:bg-amber-600 bg-neutral-600 p-1 rounded-lg'>Rest API Docs</Link>
-          <Link href={`${process.env.NEXT_PUBLIC_BACKEND_URL}graphql/` || ''} target='_blank' rel='noopener noreferrer' className='hover:bg-amber-600 bg-neutral-600 p-1 rounded-lg'>GraphQL Playground</Link>
+          <Link href="https://quimer-api.vercel.app/admin/"  rel='noopener noreferrer' className='hover:bg-amber-600 bg-neutral-600 p-1 rounded-lg'>Admin Dashboard</Link>
         </div>
       </div>
       <Link href='#home' className='fixed bottom-0 right-0 m-4 hover:text-amber-500'>Back to Top</Link>
